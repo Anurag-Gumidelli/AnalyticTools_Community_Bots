@@ -1,31 +1,34 @@
 import re
+import os
+from nltk.stem import WordNetLemmatizer
 
-file1 = 'corpus/a.txt'
-file2 = 'corpus/b.txt'
-file3 = 'corpus/c.txt'
-file4 = 'corpus/d.txt'
+dir1 = 'corpus/coca-samples-text'
+dir2 = 'corpus/webtext'
+dir3 = 'corpus/wiki'
 
-files = [file1, file2, file3, file4]
+dirs = [dir1, dir2, dir3]
 corpus = dict()
+lemmatizer = WordNetLemmatizer()
 
-for file in files:
-
-    with open(file, 'r') as f:
-        while (l := f.readline()):
-            l = re.sub(r'[^\w\s]', '', l)
-            words = l.split()
-        
-            for word in words:
+for dir in dirs:
+    for file in os.listdir(dir):
+        current = os.path.join(dir, file)
+        with open(current, 'r') as f:
+            while (l := f.readline()):
+                l = re.sub(r'[^\w\s]', '', l)
+                words = l.split()
             
-                cur = word.strip().lower()
-            
-                if cur in corpus:
-                    corpus[cur] += 1
-                else:
-                    corpus[cur] = 1
+                for word in words:
+                    if not word.isnumeric():
+                        cur = lemmatizer.lemmatize(word.strip().lower())
+                    
+                        if cur in corpus:
+                            corpus[cur] += 1
+                        else:
+                            corpus[cur] = 1
 
 
 with open('corpus.txt', 'w') as c:
     for k,v in corpus.items():
-        freq = v/len(files)
+        freq = v/3
         c.write(f'{k}   {freq}\n')
