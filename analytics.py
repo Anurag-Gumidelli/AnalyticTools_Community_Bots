@@ -102,32 +102,38 @@ if __name__ == '__main__':
 
 
 
-    data = ['data/P1_chat.csv']
+    dirs = ['data/multi', 'data/single']
     lemmatizer = WordNetLemmatizer()
-    for file in data:
-        with open(file, 'r') as p:
-            file_analytics = Analytics(corpus, lemmatizer)
-            while (l:=p.readline()):
-    # line style : Timestamp, SentBy, Topic, Message, Specificty, Relavance, Clarity, open_ended, Expanded
-                data_array = l.split(',')
-                # if len(data_array) != 8:
-                #     print('ERROR')
-                #     break
-                ts = data_array[0].strip()
-                sb = data_array[1].strip()
-                topic = data_array[2].strip()
-                msg = ''.join(data_array[3:-5]).strip()
-                spec = data_array[-5].strip()
-                rel = data_array[-4].strip()
-                clar = data_array[-3].strip()
-                op = data_array[-2].strip()
-                exp = data_array[-1].strip()
-                file_analytics.process(ts, sb, msg, spec, rel, clar, op, exp )
+    for dir in dirs:
+        for p in os.listdir(dir):
+            file = os.path.join(dir, p)
+            if os.path.isdir(file):
+                continue
+            with open(file, 'r') as p:
+                file_analytics = Analytics(corpus, lemmatizer)
+                while (l:=p.readline()):
+        # line style : Timestamp, SentBy, Topic, Message, Specificty, Relavance, Clarity, open_ended, Expanded
+                    data_array = l.split(',')
+                    # if len(data_array) != 8:
+                    #     print('ERROR')
+                    #     break
+                    ts = data_array[0].strip()
+                    sb = data_array[1].strip()
+                    topic = data_array[2].strip()
+                    msg = ''.join(data_array[3:-5]).strip()
+                    spec = data_array[-5].strip()
+                    rel = data_array[-4].strip()
+                    clar = data_array[-3].strip()
+                    op = data_array[-2].strip()
+                    exp = data_array[-1].strip()
+                    file_analytics.process(ts, sb, msg, spec, rel, clar, op, exp )
 
-            res = file_analytics.results( (names :=file.split('/')) [1])
-            o_file = names[0] + '/res/' + names[1]
-            with open(o_file,'w') as o_f:
-                o_f.write(res)
+                res = file_analytics.results( (names :=file.split('/')) [-1])
+
+
+                o_file = dir + '/res/' + names[-1]
+                with open(o_file,'w') as o_f:
+                    o_f.write(res)
 
 
 
